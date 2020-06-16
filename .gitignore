@@ -4,4 +4,8 @@ IntelliJ IDEA Community Edition 2020.1.2 x64.lnk
 JAVA.iml
 lib/
 out/
+*.class
+*.out
+*.exe
+
 
