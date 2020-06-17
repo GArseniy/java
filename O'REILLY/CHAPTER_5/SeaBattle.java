@@ -36,8 +36,8 @@ class Ship {
 	// 3 : W
 	
 	void initShip() {
-	boolean end = false;
-	while(!end) {
+		boolean end = false;
+		while(!end) {
 		x = (byte) (Math.random() * N);
 		y = (byte) (Math.random() * N);
 		// table[x][y] : zero cell coordinates
@@ -71,7 +71,8 @@ class Ship {
 		}
 	}	
 }
-class Game {
+class Game
+{
 	
 	//    <table[x][y]>
 	// __|_0_1_2_3_4_5_6 ... x
