@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class SeaBattleGame {
 
 	static byte N = 7;
@@ -7,27 +9,88 @@ public class SeaBattleGame {
 		field.createField();
 		byte num_ships = 3;
 		Ship[] ships = new Ship[num_ships];
-		String[] names = {"Arseny", "Motya", "Sidart"};
+		String[] names = {"Арсения", "Матвея", "Дарика"};
 		for (byte i = 0; i < num_ships; i++) {
 			ships[i] = new Ship();
 			ships[i].createShip(names[i]);
 		}
+
+
+		System.out.println("  A B C D E F G                       A B C D E F G");
 		for (byte x = 0; x < N; x++) {
+			System.out.printf("%d ",x+1);
 			for (byte y = 0; y < N; y++) {
-				System.out.print(field.getBool(x, y));
-				System.out.print(" ");
+				System.out.print("o ");
+			}
+			System.out.print("                    ");
+			System.out.printf("%d ",x+1);
+			for (byte y = 0; y < N; y++) {
+				if (field.getBool(x, y)) {
+					System.out.print("x ");
+				} else {
+					System.out.print("o ");
+				}
 			}
 			System.out.printf("\n");
 		}
-		for (byte i = 0; i < num_ships; i++) {
-			System.out.print(i);
-			System.out.print(" корабль: ");
-			for (byte j = 0; j < 6; j++) {
-				System.out.print(ships[i].coors[j]);
-				System.out.print(" ");
+		System.out.printf("\nОбразец координат: 'A 1'\n\n");
+
+
+		boolean end = false;
+		byte endCounter = 0;
+		while (!end) {
+			try {
+				byte[] coors = new byte[2];
+				coors = SeaBattleGame.getCoors();
+				if (field.getBool(coors[0], coors[1])) {
+					System.out.println("Попал!");
+					for (byte i = 0; i < num_ships; i++) {
+						byte counter = 0;
+						for (byte j = 0; j < 3; j++) {
+							if (ships[i].coors[j][0] == coors[0] && ships[i].coors[j][1] == coors[1]) {
+								field.setBool(ships[i].coors[j][0], ships[i].coors[j][1], (byte) 0);
+								for (byte k = 0; k < 3; k++) {
+									if (!field.getBool(ships[i].coors[k][0], ships[i].coors[k][1])) {
+										counter++;
+									}
+								}
+								if (counter == 3) {
+									System.out.printf("Потопил %s\n", ships[i].name);
+									endCounter++;
+								}
+								if (endCounter == 3) {
+									end = true;
+								}
+							}
+						}
+					}
+					System.out.println(" ");
+				}
+				else {
+					System.out.printf("Мимо!\n\n");
+				}
+			} catch (Exception e) {
+				System.out.printf("Введены некорректные данные!\n\n");
 			}
-			System.out.printf("\n");
 		}
+		System.out.println("Ты победил!");
+	}
+
+	static byte[] getCoors() {
+		byte x;
+		byte y = 0;
+		System.out.print("Введите координаты: ");
+		Scanner scan = new Scanner(System.in);
+		String strCoors = scan.nextLine();
+		char[] charsX = {'A', 'B', 'C', 'D', 'E', 'F','G', 'H', 'I', 'J', 'K', 'L'};
+		for (byte i = 0; i < N; i++) {
+			if (strCoors.charAt(0) == charsX[i]) {
+				y = i;
+			}
+		}
+		x = (byte) ((Integer.parseInt(String.valueOf(strCoors.charAt(2)))) - 1);
+		byte[] coors = {x, y};
+		return coors;
 	}
 }
 
@@ -38,7 +101,7 @@ class Ship {
 	PlayingField field = SeaBattleGame.field;
 
 	String name;
-    byte[] coors;
+    byte[][] coors;
 
 	void createShip(String nick) {
 		name = nick;
@@ -51,35 +114,40 @@ class Ship {
 			// 1 : E
 			// 2 : S
 			// 3 : W
-			if ((cardinal_point == 0) && (y-2 >= 0) && (field.getBool(x, y) == field.getBool(x, (byte) (y-1)) == field.getBool(x, (byte) (y-2)) == false)){
-				field.setBool(x, y, (byte) 1);
-				field.setBool(x, (byte) (y-1) ,(byte) 1);
-				field.setBool(x, (byte) (y-2) ,(byte) 1);
-				byte[] coors_copy = {x, y, x, (byte) (y-1), x, (byte)(y-2)};
-                coors = coors_copy;
-				end = true;}
-			else{if ((cardinal_point == 1) && (x+2 <= N) && (field.getBool(x, y) == field.getBool((byte) (x+1), y) == field.getBool((byte) (x+2), y) == false)){
-				field.setBool(x, y, (byte) 1);
-				field.setBool((byte) (x+1), y ,(byte) 1);
-				field.setBool((byte) (x+2), y ,(byte) 1);
-				byte[] coors_copy = {x, y, (byte) (x+1), y, (byte) (x+2), y};
-                coors = coors_copy;
-				end = true;}
-			else{if ((cardinal_point == 2) && (y+2 <= N) && (field.getBool(x, y) == field.getBool(x, (byte) (y+1)) == field.getBool(x, (byte) (y+2)) == false)){
-				field.setBool(x, y, (byte) 1);
-				field.setBool(x, (byte) (y+1) ,(byte) 1);
-				field.setBool(x, (byte) (y+2) ,(byte) 1);
-				byte[] coors_copy = {x, y, x, (byte) (y+1), x, (byte) (y+2)};
-                coors = coors_copy;
-				end = true;}
-			else{if ((cardinal_point == 3) && (x-2 >= 0) && (field.getBool(x, y) == field.getBool((byte) (x-1), y) == field.getBool((byte) (x-2), y) == false)){
-				field.setBool(x, y, (byte) 1);
-				field.setBool((byte) (x-1), y ,(byte) 1);
-				field.setBool((byte) (x-2), y ,(byte) 1);
-				byte[] coors_copy = {x, y, (byte) (x-1), y, (byte) (x-2), y};
-                coors = coors_copy;
-				end = true;}
-			}}}
+			try {
+				if ((cardinal_point == 0) && (field.getBool(x, y) == field.getBool(x, (byte) (y-1)) == field.getBool(x, (byte) (y-2)) == false)){
+					field.setBool(x, y, (byte) 1);
+					field.setBool(x, (byte) (y-1) ,(byte) 1);
+					field.setBool(x, (byte) (y-2) ,(byte) 1);
+					byte[][] coors_copy = {{x, y}, {x, (byte) (y-1)}, {x, (byte)(y-2)}};
+					coors = coors_copy;
+					end = true;}
+				else{if ((cardinal_point == 1) && (field.getBool(x, y) == field.getBool((byte) (x+1), y) == field.getBool((byte) (x+2), y) == false)){
+					field.setBool(x, y, (byte) 1);
+					field.setBool((byte) (x+1), y ,(byte) 1);
+					field.setBool((byte) (x+2), y ,(byte) 1);
+					byte[][] coors_copy = {{x, y}, {(byte) (x+1), y}, {(byte) (x+2), y}};
+					coors = coors_copy;
+					end = true;}
+				else{if ((cardinal_point == 2) && (field.getBool(x, y) == field.getBool(x, (byte) (y+1)) == field.getBool(x, (byte) (y+2)) == false)){
+					field.setBool(x, y, (byte) 1);
+					field.setBool(x, (byte) (y+1) ,(byte) 1);
+					field.setBool(x, (byte) (y+2) ,(byte) 1);
+					byte[][] coors_copy = {{x, y}, {x, (byte) (y+1)}, {x, (byte) (y+2)}};
+					coors = coors_copy;
+					end = true;}
+				else{if ((cardinal_point == 3) && (field.getBool(x, y) == field.getBool((byte) (x-1), y) == field.getBool((byte) (x-2), y) == false)){
+					field.setBool(x, y, (byte) 1);
+					field.setBool((byte) (x-1), y ,(byte) 1);
+					field.setBool((byte) (x-2), y ,(byte) 1);
+					byte[][] coors_copy = {{x, y}, {(byte) (x-1), y}, {(byte) (x-2), y}};
+					coors = coors_copy;
+					end = true;}
+				}}}
+			}
+			catch (Exception e) {
+
+			}
 		}
 	}
 }
@@ -110,7 +178,8 @@ class PlayingField
 		}
 	}
 
-	boolean getBool(byte x, byte y) {
+	public boolean getBool(byte x, byte y) {
 		return table[x][y];
 	}
 }
+
