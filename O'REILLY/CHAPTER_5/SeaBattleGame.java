@@ -4,6 +4,7 @@ public class SeaBattleGame {
 
 	static byte N = 7;
 	static PlayingField field = new PlayingField();
+	static int result = 0;
 
 	public static void main(String[] args) {
 		field.createField();
@@ -33,7 +34,7 @@ public class SeaBattleGame {
 			}
 			System.out.printf("\n");
 		}
-		System.out.printf("\nОбразец координат: 'A 1'\n\n");
+		System.out.printf("\nОбразец координат: 'A1'\n\n");
 
 
 		boolean end = false;
@@ -73,10 +74,11 @@ public class SeaBattleGame {
 				System.out.printf("Введены некорректные данные!\n\n");
 			}
 		}
-		System.out.println("Ты победил!");
+		System.out.printf("Ты потопил все корабли за %d попыток!\n", result);
 	}
 
 	static byte[] getCoors() {
+		result++;
 		byte x;
 		byte y = 0;
 		System.out.print("Введите координаты: ");
@@ -88,7 +90,7 @@ public class SeaBattleGame {
 				y = i;
 			}
 		}
-		x = (byte) ((Integer.parseInt(String.valueOf(strCoors.charAt(2)))) - 1);
+		x = (byte) ((Integer.parseInt(String.valueOf(strCoors.charAt(1)))) - 1);
 		byte[] coors = {x, y};
 		return coors;
 	}
@@ -101,7 +103,7 @@ class Ship {
 	PlayingField field = SeaBattleGame.field;
 
 	String name;
-    byte[][] coors;
+	byte[][] coors;
 
 	void createShip(String nick) {
 		name = nick;
@@ -182,4 +184,3 @@ class PlayingField
 		return table[x][y];
 	}
 }
-
